@@ -1,0 +1,23 @@
+{
+  "name": "programmi_git",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000d\u0000e\u0000v\u0000h\u0000u\u0000b\u0000-\u0000n\u0000o\u0000d\u0000e\u0000j\u0000s\u0000\r\u0000 \u0000",
+  "main": "demo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saracrispo/devhub-nodejs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saracrispo/devhub-nodejs/issues"
+  },
+  "homepage": "https://github.com/saracrispo/devhub-nodejs#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

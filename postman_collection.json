@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "7f56d9f5-f250-4d87-9f21-8cb7aeaf024d",
+		"name": "DEVHUB_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34032585",
+		"_collection_link": "https://elmecspa-df.postman.co/workspace/DF~89fc209f-7ca2-49ed-b74d-d2a6f7e67528/collection/34032585-7f56d9f5-f250-4d87-9f21-8cb7aeaf024d?action=share&source=collection_link&creator=34032585"
+	},
+	"item": [
+		{
+			"name": "addUser",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"aaaaa\", \"email\":\"davide.pesenti@elmec.it\", \"password\": \"aaaaaaaaaaa\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/addUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"addUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listMovies",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcyIsImlhdCI6MTc0MTY3OTAwNH0.zc56RI5VQHHPTBsTZFHJdXwCHuP7oKYgT2pazeuS96k",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/listMovies?title=lalalalala",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"listMovies"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "lalalalala"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addFilm",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcyIsImlhdCI6MTc0MTY3OTAwNH0.zc56RI5VQHHPTBsTZFHJdXwCHuP7oKYgT2pazeuS96k",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"lalalalala\",\r\n    \"director\": \"scorsese\",\r\n    \"year\": 1993\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/addFilm",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"addFilm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"pes\",\r\n    \"password\": \"aaaaaaaaaaaa\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
