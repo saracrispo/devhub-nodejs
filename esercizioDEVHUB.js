@@ -9,13 +9,14 @@ const app = express()
 
 //middlewares per la gestione delle richieste in entrata
 app.use(express.json())
+//aggiungiamo le regole per non far subire dei controlli di autorizzazione da parte dei browser (=supera i controlli e vai comunque)
 app.use(bodyParser.json());
 app.use(cors())
 
 const config = {
   PORT: 3000,
   TOKEN_SIGN_KEY: '<chiave per firma token>',
-  MONGODB_URI: `<url cluster mongodb>`,
+  MONGODB_URI: `mongodb+srv://saracrispino:1bPydWVj9wIQzFWe@demonodejs.jbpaovs.mongodb.net/?retryWrites=true&w=majority&appName=DemoNodeJS`,
   MONGODB_DB: 'sample_mflix'
 }
 
@@ -29,9 +30,9 @@ const client = new MongoClient(config.MONGODB_URI, {
 })
 
 //middleware controllo validità token - eseguito per tutte le richieste ricevute indistintamente dal path
-app.use(function (req, res, next) {
+app.use(function (req, res, next) {  //next = se ti chiamo vai avanti con cosa deve succedere in base alla richiesta che ho ricevuto
   //escludo rotte che non devono essere sotto autenticazione
-  if (req.originalUrl === '/login' || req.originalUrl === '/addUser') {
+  if (req.originalUrl === '/login' || req.originalUrl === '/addUser') { //se si chiama login o addUser vai avanti
     return next()
   }
   if (req.headers.authorization && req.headers.authorization.length > 0 && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -64,14 +65,14 @@ app.post('/login', async (req, res) => {
     // imposto il db in cui devo effettuare la query
     const db = client.db(config.MONGODB_DB)
     // cerco se esite già un utente con lo username che ho ricevuto
-    const user = await db.collection('users').findOne({ username: username });
+    //const user = await db.collection('users').findOne({ username: username }); //commento per fare i test
     // in caso non esiste rispondo alla richiesta indicando che l'utente non esiste
-    if (!user) return res.status(404).json({ rc: 1, msg: `User ${username} not found` });
+    //if (!user) return res.status(404).json({ rc: 1, msg: `User ${username} not found` }); //commento per fare i test
 
     // controllo che la password ricevuta nella richiesta corrisponda a quella salvata sul database
-    const match = await bcrypt.compare(password, user.password);
+    //const match = await bcrypt.compare(password, user.password); //commento per fare i test
     // in caso non corrispondesse rispondo alla richiesta indicando che le credenziali ricevute non sono valide
-    if (!match) return res.status(401).json({ rc: 1, msg: 'Invalid credentials' })
+    //if (!match) return res.status(401).json({ rc: 1, msg: 'Invalid credentials' }) //commento per fare i test
     //se sono arrivato qui vuol dire che i controlli precedenti sono stati superati
     const content = { username }
     // genero quindi un token e gli imposto una durata di validità (1 ora in questo caso)
@@ -126,12 +127,18 @@ app.post('/addFilm', async (req, res) => {
 // ritorna una lista filtrata di film  
 app.get('/listMovies', async (req, res) => {
     // leggo i filtri ricevuti nel body della richiesta in formato json
+    const{title}=req.query;
+    console.log(title);
     // apro la connessione a mongodb
+    await client.connect();
     // imposto il database su cui voglio lavorare
+    const db = client.db(config.MONGODB_DB)
     // effettuo la query e recupero i primi 50 record che trovo, ordinati in maniera decrescente per campo _id
-    // rispondo alla richiesta ritornado un campo data nel body della risposta che contiene i record recuperati dalla query
-
-   res.status(200).json({ rc: 0 })
+    const listFilm = db.collection('movies').find({title}).toArray();
+    // rispondo alla richiesta ritornando un campo data nel body della risposta che contiene i record recuperati dalla query
+    if (listFilm) return res.json({rc: 0, msg: 'Film trovati'})
+      //console.log('Abbiamo trovato i film');
+      res.status(200).json({ rc: 0, data: movies })
 })
 
 // attivazione web server in ascolto sulla porta indicata
