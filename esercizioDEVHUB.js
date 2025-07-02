@@ -91,7 +91,13 @@ app.post('/login', async (req, res) => {
 // Creazione di un nuovo utente con le credenziali fornite nel body della richiesta
 app.put('/addUser', async (req, res) => {
   try {
-    // leggo i parametri (obbligatori) username, password e email ricevuti nel body della richiesta
+    // leggo i parametri (obbligatori) username (name nel db), password e email ricevuti nel body della richiesta
+    const{username}=req.query;
+     console.log('username:', username);
+     const{password}=req.query;
+     console.log('password:', password);
+     const{email}=req.query;
+     console.log('email:', email);
     // apro la connessione a mongodb
     await client.connect()
     // controllo se esiste già un utente con lo stesso username e se esiste rispondo con un messaggio di errore adeguato
@@ -111,11 +117,20 @@ app.put('/addUser', async (req, res) => {
 app.post('/addFilm', async (req, res) => {
   try {
      // leggo i parametri (obbligatori) title, director e year ricevuti nel body della richiesta
+     const{title}=req.query;
+     console.log('titolo:', title);
+     const{director}=req.query;
+     console.log('regista:', director);
+     const{year}=req.query;
+     console.log('anno:', year);
      // se i parametri non sono tutti correttamente valorizzati rispondo con un messaggio di errore adeguato
      // apro la connessione a mongodb
      await client.connect()
+     const db = client.db(config.MONGODB_DB)
      // inserisco il nuovo film nella collection movies
-    res.status(201).send({ rc: 0, msg: `Film ${title} added successfully` })
+     const addFilm =db.collection("movies").insertOne({"title": title, "director": director, "year": year});
+
+    if (addFilm) return res.status(201).send({ rc: 0, msg: `Film ${title} added successfully` })
   } catch (err) {
     console.error(err)
     res.status(500).json({ rc: 1, msg: err.toString() })
