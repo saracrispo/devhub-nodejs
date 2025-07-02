@@ -134,11 +134,11 @@ app.get('/listMovies', async (req, res) => {
     // imposto il database su cui voglio lavorare
     const db = client.db(config.MONGODB_DB)
     // effettuo la query e recupero i primi 50 record che trovo, ordinati in maniera decrescente per campo _id
-    const listFilm = db.collection('movies').find({title}).toArray();
+    const listFilm = db.collection("movies").find({"title": {"$regex": title, "$options": "i" }}).sort({"_id" : -1}).limit(50).toArray();
     // rispondo alla richiesta ritornando un campo data nel body della risposta che contiene i record recuperati dalla query
-    if (listFilm) return res.json({rc: 0, msg: 'Film trovati'})
-      //console.log('Abbiamo trovato i film');
-      res.status(200).json({ rc: 0, data: movies })
+    if (listFilm) return res.status(200).json({ rc: 0, data: await(listFilm) })
+      //bisogna trovare un modo per restituire a video il fatto che non si sia trovato un titolo
+    //res.json({rc: 0, msg: 'Film trovati'})  
 })
 
 // attivazione web server in ascolto sulla porta indicata
