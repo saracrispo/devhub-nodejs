@@ -92,18 +92,36 @@ app.post('/login', async (req, res) => {
 app.put('/addUser', async (req, res) => {
   try {
     // leggo i parametri (obbligatori) username (name nel db), password e email ricevuti nel body della richiesta
-    const{username}=req.query;
+     const{username}=req.body;
      console.log('username:', username);
-     const{password}=req.query;
-     console.log('password:', password);
-     const{email}=req.query;
+     const{email}=req.body;
      console.log('email:', email);
+     const{password}=req.body;
+     console.log('password:', password);
+     //per evitare di scrivere tre volte questi campi si può anche scrivere const { username, email, password } = req.body;
+
     // apro la connessione a mongodb
     await client.connect()
+    const db = client.db(config.MONGODB_DB); 
+    
+    //controllo che i dati siano stati inseriti
+    if (!username || !password || !email) return res.status(400).json({ rc: 1, msg: 'Missing one or more required fields: username, password, email' });
+
     // controllo se esiste già un utente con lo stesso username e se esiste rispondo con un messaggio di errore adeguato
+    const usernameEsistente = await db.collection('users').findOne({ name: username });
+    if (usernameEsistente) return res.status(400).json({ rc: 1, msg: `Username '${username}' is already taken` });
+    
     // effettuo lo stesso controllo anche per il campo email
+    const emailEsistente = await db.collection('users').findOne({ email: email });
+    if (emailEsistente) return res.status(400).json({ rc: 1, msg: `Email '${email}' is already registered` });
+
+    //per non mettere la password in chiaro utilizziamo bycript
+    const pwdNascosta = await bcrypt.hash(password, 10);
+
     // se supero i controlli precedenti allora posso inserire il nuovo utente nel database
     // effettua la insert sulla collection users e invia la risposta alla richiesta 
+    const addUser = await db.collection("users").insertOne({"name": username, "email": email, "password": pwdNascosta});
+
     res.status(201).send({ rc: 0, msg: `User ${username} added successfully` })
   } catch (err) {
     console.error(err)
@@ -117,20 +135,27 @@ app.put('/addUser', async (req, res) => {
 app.post('/addFilm', async (req, res) => {
   try {
      // leggo i parametri (obbligatori) title, director e year ricevuti nel body della richiesta
-     const{title}=req.query;
+     const {title, director, year} = req.body;
+     //const{title}=req.body;
      console.log('titolo:', title);
-     const{director}=req.query;
+     //const{director}=req.body;
      console.log('regista:', director);
-     const{year}=req.query;
+     //const{year}=req.body;
      console.log('anno:', year);
+
      // se i parametri non sono tutti correttamente valorizzati rispondo con un messaggio di errore adeguato
+    if (!title || !director || !year) return res.status(400).json({ rc: 1, msg: 'Missing one or more required fields: title, director, year' });
+
      // apro la connessione a mongodb
      await client.connect()
      const db = client.db(config.MONGODB_DB)
      // inserisco il nuovo film nella collection movies
-     const addFilm =db.collection("movies").insertOne({"title": title, "director": director, "year": year});
+     const addFilm = await db.collection("movies").insertOne({"title": title, "director": director, "year": year});
 
-    if (addFilm) return res.status(201).send({ rc: 0, msg: `Film ${title} added successfully` })
+    //if (addFilm) return res.status(201).send({ rc: 0, msg: `Film ${title} added successfully` }) //insertOne restituisce sempre un oggetto, quindi sarebbe sempre entrato nell'if
+    if (addFilm.acknowledged) return res.status(201).send({ rc: 0, msg: `Film '${title}' added successfully`, id: addFilm.insertedId }); //restituiamo l'id appena creato per fare in modo che sia più facile trovarlo nel db
+     else return res.status(500).json({ rc: 1, msg: 'Failed to insert film' });
+    
   } catch (err) {
     console.error(err)
     res.status(500).json({ rc: 1, msg: err.toString() })
